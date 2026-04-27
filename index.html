@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Secret Diary</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;;
+    background: linear-gradient(to right, #c1f0c1, #e6ffe6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* main container */
+.container {
+    background: #f9fff9;
+    border: 6px solid #0b6623;
+    border-radius: 35px;
+    padding: 25px;
+    width: 90%;        /* responsive width */
+    max-width: 700px;  /* keeps desktop size */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+/* header */
+.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+h3 {
+    margin: 0;
+    color: #0b6623;
+}
+
+/* date */
+#date {
+    border-radius: 10px;
+    padding: 5px;
+    border: 1px solid #0b6623;
+}
+
+/* textarea */
+textarea {
+    width: 100%;
+    height: 200px;
+    margin-top: 15px;
+    border-radius: 15px;
+    padding: 15px;
+    border: 2px solid #b2d8b2;
+    outline: none;
+    font-size: 15px;
+    box-sizing: border-box;
+    resize: none; /* optional: cleaner mobile look */
+}
+
+/* buttons */
+button {
+    background: #0b6623;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 10px 15px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #145a32;
+    transform: scale(1.05);
+}
+
+/* floating add button */
+.add-btn {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    background: #0b6623;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* notes */
+.note {
+    background: #ffffff;
+    padding: 12px;
+    margin-top: 12px;
+    border-radius: 15px;
+    border-left: 5px solid #0b6623;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+}
+
+.note b {
+    color: #0b6623;
+}
+
+/* login page */
+#login {
+    background: #f0fff0;
+    padding: 30px;
+    border-radius: 20px;
+    border: 4px solid #0b6623;
+    text-align: center;
+}
+
+#login input {
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px solid #0b6623;
+}
+</style>
+</head>
+
+<body>
+
+<!-- PASSWORD SCREEN -->
+<div id="login">
+    <h2>Enter Password</h2>
+    <input type="password" id="password" placeholder="Enter numbers only">
+    <button onclick="checkPassword()">Enter</button>
+</div>
+
+<!-- MAIN DIARY -->
+<div class="container" id="app" style="display:none;">
+    
+    <div class="top">
+        <h3>My Diary</h3>
+        <input type="date" id="date">
+    </div>
+
+    <textarea id="content" spellcheck="false" placeholder="Write your feelings..."></textarea>
+
+    <button onclick="saveNote()">Save</button>
+    <div class="add-btn" onclick="addNew()">+</div>
+
+    <div id="notes"></div>
+
+</div>
+
+<script>
+
+// check if password exists
+let savedPassword = localStorage.getItem("diaryPassword");
+
+// 🔐 First-time setup (ONLY once)
+if (!savedPassword) {
+    let newPass = prompt("Set your diary password (numbers only):");
+
+    if (newPass) {
+        localStorage.setItem("diaryPassword", newPass);
+        alert("Password set successfully! Reload and login.");
+    }
+}
+
+// check password
+function checkPassword() {
+    let input = document.getElementById("password").value;
+    let stored = localStorage.getItem("diaryPassword");
+
+    if (input === stored) {
+        document.getElementById("login").style.display = "none";
+        document.getElementById("app").style.display = "block";
+        loadNotes();
+    } else {
+        alert("Wrong Password!");
+    }
+}
+
+// save note
+function saveNote() {
+    let date = document.getElementById("date").value;
+    let content = document.getElementById("content").value;
+
+    if (!content) {
+        alert("Write something first!");
+        return;
+    }
+
+    let notes = JSON.parse(localStorage.getItem("diary")) || [];
+
+    notes.push({date, content});
+
+    localStorage.setItem("diary", JSON.stringify(notes));
+
+    loadNotes();
+}
+
+// load notes
+function loadNotes() {
+    let notes = JSON.parse(localStorage.getItem("diary")) || [];
+
+    let notesDiv = document.getElementById("notes");
+    notesDiv.innerHTML = "";
+
+    notes.forEach(n => {
+        let div = document.createElement("div");
+        div.className = "note";
+        div.innerHTML = `<b>${n.date}</b><br>${n.content}`;
+        notesDiv.appendChild(div);
+    });
+}
+
+// add new
+function addNew() {
+    document.getElementById("content").value = "";
+    document.getElementById("date").value = "";
+}
+
+</script>
+
+</body>
+</html>
