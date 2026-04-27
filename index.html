@@ -152,18 +152,22 @@ button:hover {
 
 <script>
 
-// check if password exists
-let savedPassword = localStorage.getItem("diaryPassword");
+window.onload = function () {
+    let savedPassword = localStorage.getItem("diaryPassword");
 
-// 🔐 First-time setup (ONLY once)
-if (!savedPassword) {
-    let newPass = prompt("Set your diary password (numbers only):");
+    // FIRST TIME → force setup
+    if (!savedPassword) {
+        let newPass = prompt("Set your diary password (numbers only):");
 
-    if (newPass) {
-        localStorage.setItem("diaryPassword", newPass);
-        alert("Password set successfully! Reload and login.");
+        if (newPass && newPass.trim() !== "") {
+            localStorage.setItem("diaryPassword", newPass);
+            alert("Password set! Now enter it to login.");
+        } else {
+            alert("You must set a password!");
+            location.reload();
+        }
     }
-}
+};
 
 // check password
 function checkPassword() {
